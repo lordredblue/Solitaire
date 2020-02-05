@@ -1,8 +1,10 @@
 <html>
 
 <head>
-    <title>Solitaire CARDTS</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Solitaire Cardaashiun</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	
+
     <script src="cardts.min.js"></script>
     <script src="element.card-t.full.js"></script>
     <script type="module" src="solitaire.js"></script>
@@ -14,17 +16,64 @@
 
     <style id=DropLocations>
         /* JavaScript dynamicall adds rules where a dragging card can be dropped */
-    </style>
+	</style>
+	
+<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+ <script src="//iris.magicusers.com/atheos/afrodite.js"></script>
+<link rel="stylesheet" href="//iris.magicusers.com/atheos/themes/app.dark.css"> 
 
+<style>
+	#idMagicUsersContainer {
+		height:1.1618em;
+		width:100%;
+	}
+
+</style>
+<script>
+		let initpromiseresolve;
+		const initpromise = new Promise(resolve => initpromiseresolve = resolve);
+
+		class GameControl extends Aθεος.Αφροδίτη.SharedWorldControl
+		{
+			constructor()
+			{
+				super({
+					ReloadDocumentOnReset: true
+					,Title:"Cardaashiun"
+					,Container:document.getElementById("idMagicUsersContainer")
+				});
+			}
+
+			OnInit()
+			{
+				super.OnInit();
+			
+				Math.seedrandom(this.Server.birthday);
+				console.debug("Reset randseed", Math.random());
+
+				initpromiseresolve(this);
+			}
+		}
+
+		window.gamecontrolpromise = Aθεος.Αφροδίτη.OnReady().then(()=> {
+			new GameControl();
+			return initpromise;
+		});
+
+		
+
+		;
+</script>
 </head>
 
 <body>
+	<div id="idMagicUsersContainer" title="Tap for more online juice"></div>
+
     <header>
         <cardts-zone id=CardtsHeader>
             <!-- Cardts with Title Letters are injected here -->
         </cardts-zone>
         <div>
-            <a href='https://github.com/card-ts/playingcardts'>&lt;card-t&gt;</a> Selection and Drag-Drop interactions
         </div>
     </header>
     <main>
@@ -47,26 +96,12 @@
                 <!-- outline current card & sequence of cards -->
             </div>
             <div id="Instructions">
-                Game logic not (yet) implemented.
-                <br>
-                Testing selection and drag-drop interactions with card-ts and piles
-                <br>
-                You can drag any selection to any pile
             </div>
         </cardts-area>
     </main>
 
     <script>
     </script>
-    <footer>&lt;card-t&gt; on GitHub: <a
-            href="https://card-ts.github.io/playingcardts/">https://card-ts.github.io/playingcardts/</a>
-    </footer>
-    <!-- Fork me on GitHub label  -->
-    <a style="position:fixed;top:0;right:0" href="https://github.com/card-ts/solitaire"><img width="160" height="160"
-            src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=160%2C160"></a>
-
 </body>
 
 </html>
-<div id=PublishDate>
-Published: 2019-06-20 10:51 

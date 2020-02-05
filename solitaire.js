@@ -2,6 +2,10 @@
 
 //clone partial element: https://codepen.io/Danny-Engelman/pen/bJozWZ
 
+window.gamecontrolpromise.then((gamecontrol) => {
+
+console.debug("Game start");
+
 let ___DROPLOCATION_SCALE___ = 1.2;
 let ___DROPLOCATION_COLOR___ = 'yellowgreen';
 
@@ -103,6 +107,29 @@ let initDraggingPile = draggedElement => {
     DraggingPile.style.width = calculatedCardWidth;
     showValidDropLocations(DraggingPile.firstElementChild);
 }
+
+function dragonAction(idFrom, rgTo)
+{
+	let releasePile = document.getElementById(idFrom);
+	let rgToElements = rgTo.map(i => document.getElementById(i) );
+
+	DraggingPile.append(...rgToElements);
+
+	releasePile.append(...DraggingPile.children);
+
+	let pileCardCount = releasePile.children.length;
+	if (pileCardCount > 10) {
+		let lastCard = releasePile.lastChild;
+		if (lastCard.offsetHeight + lastCard.offsetTop > window.innerHeight) {
+			releasePile.style.setProperty('--TableOffsetY', 'calc(120px/' + pileCardCount / 5 + ')');
+		}
+		console.log(getComputedStyle(releasePile).getPropertyValue('--TableOffsetY'));
+	}
+	moveDraggingPile(false);	
+}
+
+const patched_dragonAction = gamecontrol.Server.Patch((from, to)=> dragonAction(from, to));
+
 function handleDragStart(evt) {
     evt.preventDefault();
 
@@ -128,17 +155,14 @@ function handleDragStart(evt) {
                 console.log('dropped on', releasePile.id, dropElement.alt);
             } else {
                 releasePile = draggingFromPile;
-            }
-            releasePile.append(...DraggingPile.children);
-            let pileCardCount = releasePile.children.length;
-            if (pileCardCount > 10) {
-                let lastCard = releasePile.lastChild;
-                if (lastCard.offsetHeight + lastCard.offsetTop > window.innerHeight) {
-                    releasePile.style.setProperty('--TableOffsetY', 'calc(120px/' + pileCardCount / 5 + ')');
-                }
-                console.log(getComputedStyle(releasePile).getPropertyValue('--TableOffsetY'));
-            }
-            moveDraggingPile(false);
+			}
+			const rgd = [...DraggingPile.children].map(e => e.id);
+			//releasePile.append(...DraggingPile.children);
+
+			patched_dragonAction(releasePile.id, rgd);
+			
+			
+
         }
         document.removeEventListener('mousemove', dragMouseMove);
         document.removeEventListener('mouseup', dragMouseUp);
@@ -259,7 +283,7 @@ let ranks = ['A', 2, 3, 4, 5, 6, 7, 8, 9, '10', 'J', 'Q', 'K'];
 let suits = ['S', 'H', 'D', 'C'];
 let deck = suits.map(suit => ranks.map(rank => newCard({ suit, rank }))).flat();
 
-//shuffle(deck);
+shuffle(deck);
 
 //put whole deck in Stock
 deck.forEach(card => {
@@ -362,3 +386,4 @@ let calculatedCardWidth = getComputedStyle(TablePile1.firstElementChild).width;
 //     e.preventDefault();
 // }
 // getStockCard().to(Pile1);
+});
